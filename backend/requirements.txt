@@ -1,0 +1,18 @@
+# --- Web framework ---
+fastapi>=0.115.0,<1.0.0
+uvicorn[standard]>=0.32.0
+
+# --- Database ---
+SQLAlchemy>=2.0.36
+
+# PostgreSQL driver for deployment (uncomment and use a
+# postgresql+psycopg:// DATABASE_URL when deploying)
+# psycopg[binary]>=3.2.0
+
+# --- Validation / settings ---
+pydantic[email]>=2.12,<3.0.0
+pydantic-settings>=2.6.0
+
+# --- Auth ---
+PyJWT>=2.9.0
+bcrypt>=4.2.0
