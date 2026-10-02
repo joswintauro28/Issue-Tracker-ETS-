@@ -63,7 +63,10 @@ export function getApiErrorMessage(error: unknown): string {
         .join('; ');
     }
     if (axiosError.request && !axiosError.response) {
-      return 'Cannot reach the server. Make sure the backend is running on port 8000.';
+      const target = import.meta.env.VITE_API_URL || '/api';
+      return target.startsWith('/')
+        ? 'Cannot reach the server. Make sure the backend is running on port 8000.'
+        : `Cannot reach the server. Make sure the API is reachable at ${target}`;
     }
   }
   return 'Something went wrong. Please try again.';
