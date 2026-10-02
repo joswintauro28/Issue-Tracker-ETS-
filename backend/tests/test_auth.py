@@ -3,6 +3,8 @@
 import pytest
 
 from app.core.security import create_access_token
+from app.db.session import SessionLocal
+from app.models.user import User, UserRole
 
 REGISTER_URL = "/api/auth/register"
 LOGIN_URL = "/api/auth/login"
@@ -23,7 +25,20 @@ def registered_user(client):
     """Register one valid user used by the rest of the module's tests."""
     response = client.post(REGISTER_URL, json=VALID_USER)
     assert response.status_code == 201, response.text
-    return response.json()
+    user = response.json()
+
+    # The comment/cascade flows below exercise admin-managed issue operations
+    # (create, delete), so promote this test user to admin in the database.
+    # Registration itself still returned role=user (asserted by the test).
+    db = SessionLocal()
+    try:
+        record = db.query(User).filter(User.email == VALID_USER["email"]).first()
+        assert record is not None
+        record.role = UserRole.ADMIN
+        db.commit()
+    finally:
+        db.close()
+    return user
 
 
 def _login(client, email: str, password: str) -> dict:
@@ -39,7 +54,7 @@ def test_register_success(client, registered_user):
     user = registered_user
     assert user["email"] == VALID_USER["email"]
     assert user["name"] == VALID_USER["name"]
-    assert user["role"] == "member"
+    assert user["role"] == "user"
 
 
 def test_register_response_never_exposes_password_hash(client, registered_user):

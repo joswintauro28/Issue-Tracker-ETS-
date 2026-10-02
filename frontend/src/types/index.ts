@@ -1,6 +1,6 @@
 /** Domain types mirroring the FastAPI response schemas. */
 
-export type UserRole = 'admin' | 'member';
+export type UserRole = 'admin' | 'user';
 
 export type IssueStatus = 'open' | 'in_progress' | 'closed';
 
@@ -56,12 +56,37 @@ export interface IssueCreatePayload {
   assignee_id?: number | null;
 }
 
-export interface IssueUpdatePayload {
-  title?: string;
-  description?: string;
+/** Full replacement of an issue's editable fields (PUT /api/issues/{id}). */
+export interface IssueEditPayload {
+  title: string;
+  description: string;
+  priority: IssuePriority;
   status?: IssueStatus;
-  priority?: IssuePriority;
-  assignee_id?: number | null;
+  assignee_id: number | null;
+}
+
+/** Values collected by the reusable IssueForm. */
+export interface IssueFormValues {
+  title: string;
+  description: string;
+  priority: IssuePriority;
+  assignee_id: number | null;
+}
+
+export interface Paginated<T> {
+  items: T[];
+  total: number;
+  page: number;
+  page_size: number;
+}
+
+export interface DashboardSummary {
+  total_issues: number;
+  open_issues: number;
+  in_progress_issues: number;
+  closed_issues: number;
+  recent_issues: Issue[];
+  my_assigned_issues: Issue[];
 }
 
 export interface CommentCreatePayload {

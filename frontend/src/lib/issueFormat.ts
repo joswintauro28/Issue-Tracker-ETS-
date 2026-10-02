@@ -28,6 +28,13 @@ export const PRIORITY_BADGE_TONES: Record<IssuePriority, BadgeTone> = {
 export const STATUS_ORDER: IssueStatus[] = ['open', 'in_progress', 'closed'];
 export const PRIORITY_ORDER: IssuePriority[] = ['low', 'medium', 'high'];
 
+/** Solid bar colors for the dashboard status distribution chart. */
+export const STATUS_BAR_CLASSES: Record<IssueStatus, string> = {
+  open: 'bg-sky-500',
+  in_progress: 'bg-amber-500',
+  closed: 'bg-emerald-500',
+};
+
 export function formatDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString(undefined, {
     year: 'numeric',

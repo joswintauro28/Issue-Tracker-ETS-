@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import { getApiErrorMessage } from '../api/client';
 import { usersApi } from '../api/users';
+import { useAuth } from '../context/AuthContext';
 import Badge from '../components/ui/Badge';
 import Card from '../components/ui/Card';
 import PageHeader from '../components/ui/PageHeader';
@@ -10,21 +12,44 @@ import type { User, UserRole } from '../types';
 
 const ROLE_BADGE_TONES: Record<UserRole, 'indigo' | 'gray'> = {
   admin: 'indigo',
-  member: 'gray',
+  user: 'gray',
 };
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
+    // The users list exists for assignment pickers; only admins may load it.
+    if (!isAdmin) {
+      setIsLoading(false);
+      return;
+    }
     usersApi
       .list()
       .then(setUsers)
       .catch((requestError) => setError(getApiErrorMessage(requestError)))
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [isAdmin]);
+
+  if (!isAdmin) {
+    return (
+      <div>
+        <PageHeader title="Users" description="Restricted to administrators." />
+        <Card>
+          <p className="text-sm text-slate-700">
+            You do not have permission to view the user list. Ask an administrator if you need
+            access.
+          </p>
+          <Link to="/" className="mt-3 inline-block text-sm font-semibold text-indigo-600">
+            ← Back to dashboard
+          </Link>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div>

@@ -15,6 +15,7 @@ import type { User } from '../types';
 interface AuthContextValue {
   user: User | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   isInitializing: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string, confirmPassword: string) => Promise<void>;
@@ -70,6 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       isAuthenticated: user !== null,
+      isAdmin: user?.role === 'admin',
       isInitializing,
       login,
       register,

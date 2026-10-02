@@ -41,6 +41,12 @@ class Settings(BaseSettings):
     # Comma-separated list of origins allowed to call the API.
     CORS_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173"
 
+    # Bootstrap admin account created by `python seed.py` (see backend/seed.py).
+    # Leave empty to skip admin seeding. Never commit real values.
+    ADMIN_NAME: str = ""
+    ADMIN_EMAIL: str = ""
+    ADMIN_PASSWORD: str = ""
+
     @property
     def cors_origins(self) -> list[str]:
         return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]

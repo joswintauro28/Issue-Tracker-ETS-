@@ -9,7 +9,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.api.routes import auth, issues, users
+from app.api.routes import auth, dashboard, issues, users
 from app.core.config import settings
 from app.db.init_db import init_db
 
@@ -42,6 +42,7 @@ app.add_middleware(
 app.include_router(auth.router, prefix=f"{settings.API_PREFIX}/auth", tags=["auth"])
 app.include_router(users.router, prefix=f"{settings.API_PREFIX}/users", tags=["users"])
 app.include_router(issues.router, prefix=f"{settings.API_PREFIX}/issues", tags=["issues"])
+app.include_router(dashboard.router, prefix=f"{settings.API_PREFIX}/dashboard", tags=["dashboard"])
 
 
 @app.get(f"{settings.API_PREFIX}/health", tags=["health"])

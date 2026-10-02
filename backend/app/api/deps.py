@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import decode_access_token
 from app.db.session import get_db
-from app.models.user import User
+from app.models.user import User, UserRole
 
 # HTTPBearer gives the "Authorize" button in Swagger UI where a bearer
 # token can be pasted to test protected endpoints.
@@ -55,3 +55,17 @@ def get_current_user(
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
+
+
+def require_admin(current_user: CurrentUser) -> User:
+    """RBAC guard: reject any caller who is not an administrator (403)."""
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only administrators can perform this action.",
+        )
+    return current_user
+
+
+# Endpoints using AdminUser as a dependency are admin-only at the API boundary.
+AdminUser = Annotated[User, Depends(require_admin)]

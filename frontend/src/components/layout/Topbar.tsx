@@ -1,6 +1,7 @@
 import Button from '../ui/Button';
 import { LogoutIcon, MenuIcon } from '../ui/icons';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -8,6 +9,12 @@ interface TopbarProps {
 
 export default function Topbar({ onMenuClick }: TopbarProps) {
   const { user, logout } = useAuth();
+  const { showToast } = useToast();
+
+  function handleLogout() {
+    logout();
+    showToast('You have been signed out.', 'info');
+  }
 
   return (
     <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
@@ -35,7 +42,7 @@ export default function Topbar({ onMenuClick }: TopbarProps) {
         <span className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
           {user?.name?.charAt(0).toUpperCase() ?? '?'}
         </span>
-        <Button variant="ghost" size="sm" onClick={logout} aria-label="Log out">
+        <Button variant="ghost" size="sm" onClick={handleLogout} aria-label="Log out">
           <LogoutIcon className="h-5 w-5" />
           <span className="hidden sm:inline">Log out</span>
         </Button>

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 
 import { getApiErrorMessage } from '../../api/client';
 import { commentsApi } from '../../api/comments';
+import { useToast } from '../../context/ToastContext';
 import { formatDateTime } from '../../lib/issueFormat';
 import type { Comment } from '../../types';
 import Button from '../ui/Button';
@@ -13,6 +14,7 @@ export default function IssueComments({ issueId }: { issueId: number }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     let isMounted = true;
@@ -45,6 +47,7 @@ export default function IssueComments({ issueId }: { issueId: number }) {
       setComments((previous) => [...previous, created]);
       setContent('');
       setError(null);
+      showToast('Comment posted.');
     } catch (submitError) {
       setError(getApiErrorMessage(submitError));
     } finally {

@@ -1,27 +1,37 @@
 import { useState, type FormEvent } from 'react';
 
-import type { IssueCreatePayload, IssuePriority, User } from '../../types';
+import type { IssueFormValues, IssuePriority, User } from '../../types';
 import { PRIORITY_LABELS, PRIORITY_ORDER } from '../../lib/issueFormat';
 import Button from '../ui/Button';
 import Input from '../ui/Input';
 
-interface IssueCreateFormProps {
+interface IssueFormProps {
   users: User[];
-  isSubmitting: boolean;
-  onSubmit: (payload: IssueCreatePayload) => Promise<void>;
-  onCancel: () => void;
+  initialValues?: Partial<IssueFormValues>;
+  isSubmitting?: boolean;
+  submitLabel?: string;
+  onSubmit: (values: IssueFormValues) => Promise<void>;
+  onCancel?: () => void;
 }
 
-export default function IssueCreateForm({
+/**
+ * Reusable form for creating and editing issues.
+ * Used on the Issues page (create) and the Issue Details page (edit).
+ */
+export default function IssueForm({
   users,
-  isSubmitting,
+  initialValues,
+  isSubmitting = false,
+  submitLabel = 'Save issue',
   onSubmit,
   onCancel,
-}: IssueCreateFormProps) {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<IssuePriority>('medium');
-  const [assigneeId, setAssigneeId] = useState<string>('');
+}: IssueFormProps) {
+  const [title, setTitle] = useState(initialValues?.title ?? '');
+  const [description, setDescription] = useState(initialValues?.description ?? '');
+  const [priority, setPriority] = useState<IssuePriority>(initialValues?.priority ?? 'medium');
+  const [assigneeId, setAssigneeId] = useState<string>(
+    initialValues?.assignee_id ? String(initialValues.assignee_id) : '',
+  );
   const [validationError, setValidationError] = useState<string | null>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -38,11 +48,6 @@ export default function IssueCreateForm({
       priority,
       assignee_id: assigneeId ? Number(assigneeId) : null,
     });
-
-    setTitle('');
-    setDescription('');
-    setPriority('medium');
-    setAssigneeId('');
   }
 
   return (
@@ -99,11 +104,13 @@ export default function IssueCreateForm({
       </div>
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="secondary" onClick={onCancel}>
-          Cancel
-        </Button>
+        {onCancel && (
+          <Button type="button" variant="secondary" onClick={onCancel}>
+            Cancel
+          </Button>
+        )}
         <Button type="submit" isLoading={isSubmitting}>
-          Create issue
+          {submitLabel}
         </Button>
       </div>
     </form>

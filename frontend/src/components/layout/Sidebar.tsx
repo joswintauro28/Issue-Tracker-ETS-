@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
 
+import { useAuth } from '../../context/AuthContext';
 import { CloseIcon, DashboardIcon, IssueIcon, UsersIcon } from '../ui/icons';
 
 interface SidebarProps {
@@ -8,12 +9,15 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', icon: DashboardIcon, end: true },
-  { to: '/issues', label: 'Issues', icon: IssueIcon, end: false },
-  { to: '/users', label: 'Users', icon: UsersIcon, end: false },
+  { to: '/', label: 'Dashboard', icon: DashboardIcon, end: true, adminOnly: false },
+  { to: '/issues', label: 'Issues', icon: IssueIcon, end: false, adminOnly: false },
+  { to: '/users', label: 'Users', icon: UsersIcon, end: false, adminOnly: true },
 ];
 
 function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
+  const { isAdmin } = useAuth();
+  const navItems = NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin);
+
   return (
     <div className="flex h-full flex-col">
       <div className="flex h-16 items-center gap-2 border-b border-slate-800 px-6">
@@ -24,7 +28,7 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
-        {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
+        {navItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink
             key={to}
             to={to}

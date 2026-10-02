@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 class UserRole(str, enum.Enum):
     ADMIN = "admin"
-    MEMBER = "member"
+    USER = "user"
 
 
 class User(Base):
@@ -30,7 +30,7 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(255), nullable=False)
     role: Mapped[UserRole] = mapped_column(
         Enum(UserRole, name="user_role", native_enum=False, length=20),
-        default=UserRole.MEMBER,
+        default=UserRole.USER,
         nullable=False,
     )
     created_at: Mapped[datetime] = mapped_column(
